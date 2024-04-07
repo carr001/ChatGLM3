@@ -163,7 +163,7 @@ def clean_ansi_codes(input_string):
     return ansi_escape.sub('', input_string)
 
 
-def execute(code, kernel: CodeKernel) -> tuple[str, str | Image.Image]:
+def execute(code, kernel: CodeKernel) :
     res = ""
     res_type = None
     code = code.replace("<|observation|>", "")
