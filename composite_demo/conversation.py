@@ -8,6 +8,7 @@ from streamlit.delta_generator import DeltaGenerator
 
 TOOL_PROMPT = 'Answer the following questions as best as you can. You have access to the following tools:\n'
 
+
 class Role(Enum):
     SYSTEM = auto()
     USER = auto()
@@ -17,68 +18,64 @@ class Role(Enum):
     OBSERVATION = auto()
 
     def __str__(self):
-        match self:
-            case Role.SYSTEM:
+        if self == Role.SYSTEM:
                 return "<|system|>"
-            case Role.USER:
+        elif self == Role.USER:
                 return "<|user|>"
-            case Role.ASSISTANT | Role.TOOL | Role.INTERPRETER:
+        elif self in (Role.ASSISTANT, Role.TOOL, Role.INTERPRETER):
                 return "<|assistant|>"
-            case Role.OBSERVATION:
+        elif self == Role.OBSERVATION:
                 return "<|observation|>"
-            
+
     # Get the message block for the given role
     def get_message(self):
         # Compare by value here, because the enum object in the session state
         # is not the same as the enum cases here, due to streamlit's rerunning
         # behavior.
-        match self.value:
-            case Role.SYSTEM.value:
+        if self.value == Role.SYSTEM.value:
                 return
-            case Role.USER.value:
+        elif self.value == Role.USER.value:
                 return st.chat_message(name="user", avatar="user")
-            case Role.ASSISTANT.value:
+        elif self.value == Role.ASSISTANT.value:
                 return st.chat_message(name="assistant", avatar="assistant")
-            case Role.TOOL.value:
+        elif self.value == Role.TOOL.value:
                 return st.chat_message(name="tool", avatar="assistant")
-            case Role.INTERPRETER.value:
+        elif self.value == Role.INTERPRETER.value:
                 return st.chat_message(name="interpreter", avatar="assistant")
-            case Role.OBSERVATION.value:
+        elif self.value == Role.OBSERVATION.value:
                 return st.chat_message(name="observation", avatar="user")
-            case _:
-                st.error(f'Unexpected role: {self}')
+        else:
+            st.error(f'Unexpected role: {self}')
 
 @dataclass
 class Conversation:
     role: Role
     content: str
-    tool: str | None = None
-    image: Image | None = None
+    tool: str  = None
+    image: Image = None
 
     def __str__(self) -> str:
         print(self.role, self.content, self.tool)
-        match self.role:
-            case Role.SYSTEM | Role.USER | Role.ASSISTANT | Role.OBSERVATION:
+        if self.role in (Role.SYSTEM , Role.USER , Role.ASSISTANT , Role.OBSERVATION):
                 return f'{self.role}\n{self.content}'
-            case Role.TOOL:
+        elif self.role == Role.TOOL:
                 return f'{self.role}{self.tool}\n{self.content}'
-            case Role.INTERPRETER:
+        elif self.role == Role.INTERPRETER:
                 return f'{self.role}interpreter\n{self.content}'
 
     # Human readable format
     def get_text(self) -> str:
         text = postprocess_text(self.content)
-        match self.role.value:
-            case Role.TOOL.value:
+        if self.role.value ==  Role.TOOL.value:
                 text = f'Calling tool `{self.tool}`:\n\n{text}'
-            case Role.INTERPRETER.value:
+        elif self.role.value == Role.INTERPRETER.value:
                 text = f'{text}'
-            case Role.OBSERVATION.value:
+        elif self.role.value == Role.OBSERVATION.value:
                 text = f'Observation:\n```\n{text}\n```'
         return text
     
     # Display as a markdown block
-    def show(self, placeholder: DeltaGenerator | None=None) -> str:
+    def show(self, placeholder: DeltaGenerator =None) -> str:
         if placeholder:
             message = placeholder
         else:
@@ -90,8 +87,8 @@ class Conversation:
             message.markdown(text)
 
 def preprocess_text(
-    system: str | None,
-    tools: list[dict] | None,
+    system: str ,
+    tools: list[dict] ,
     history: list[Conversation],
 ) -> str:
     if tools:

@@ -11,7 +11,7 @@ client = get_client()
 def append_conversation(
         conversation: Conversation,
         history: list[Conversation],
-        placeholder: DeltaGenerator | None = None,
+        placeholder: DeltaGenerator  = None,
 ) -> None:
     history.append(conversation)
     conversation.show(placeholder)
@@ -73,12 +73,11 @@ def main(
             token = response.token
             if response.token.special:
                 print("\n==Output:==\n", output_text)
-                match token.text.strip():
-                    case '<|user|>':
-                        break
-                    case _:
-                        st.error(f'Unexpected special token: {token.text.strip()}')
-                        break
+                if token.text.strip() == '<|user|>':
+                    break
+                else:
+                    st.error(f'Unexpected special token: {token.text.strip()}')
+                    break
             output_text += response.token.text
             markdown_placeholder.markdown(postprocess_text(output_text + '▌'))
 

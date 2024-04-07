@@ -67,34 +67,33 @@ tab = st.radio(
 if clear_history or retry:
     prompt_text = ""
 
-match tab:
-    case Mode.CHAT:
-        demo_chat.main(
-            retry=retry,
-            top_p=top_p,
-            temperature=temperature,
-            prompt_text=prompt_text,
-            system_prompt=system_prompt,
-            repetition_penalty=repetition_penalty,
-            max_new_tokens=max_new_token
-        )
-    case Mode.TOOL:
-        demo_tool.main(
-            retry=retry,
-            top_p=top_p,
-            temperature=temperature,
-            prompt_text=prompt_text,
-            repetition_penalty=repetition_penalty,
-            max_new_tokens=max_new_token,
-            truncate_length=1024)
-    case Mode.CI:
-        demo_ci.main(
-            retry=retry,
-            top_p=top_p,
-            temperature=temperature,
-            prompt_text=prompt_text,
-            repetition_penalty=repetition_penalty,
-            max_new_tokens=max_new_token,
-            truncate_length=1024)
-    case _:
-        st.error(f'Unexpected tab: {tab}')
+if tab == Mode.CHAT:
+    demo_chat.main(
+        retry=retry,
+        top_p=top_p,
+        temperature=temperature,
+        prompt_text=prompt_text,
+        system_prompt=system_prompt,
+        repetition_penalty=repetition_penalty,
+        max_new_tokens=max_new_token
+    )
+elif tab == Mode.TOOL:
+    demo_tool.main(
+        retry=retry,
+        top_p=top_p,
+        temperature=temperature,
+        prompt_text=prompt_text,
+        repetition_penalty=repetition_penalty,
+        max_new_tokens=max_new_token,
+        truncate_length=1024)
+elif tab == Mode.CI:
+    demo_ci.main(
+        retry=retry,
+        top_p=top_p,
+        temperature=temperature,
+        prompt_text=prompt_text,
+        repetition_penalty=repetition_penalty,
+        max_new_tokens=max_new_token,
+        truncate_length=1024)
+else:
+    st.error(f'Unexpected tab: {tab}')

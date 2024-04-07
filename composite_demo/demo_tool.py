@@ -36,7 +36,7 @@ def tool_call(*args, **kwargs) -> dict:
     return kwargs
 
 
-def yaml_to_dict(tools: str) -> list[dict] | None:
+def yaml_to_dict(tools: str) -> list[dict] :
     try:
         return yaml.safe_load(tools)
     except YAMLError:
@@ -54,7 +54,7 @@ def extract_code(text: str) -> str:
 def append_conversation(
         conversation: Conversation,
         history: list[Conversation],
-        placeholder: DeltaGenerator | None = None,
+        placeholder: DeltaGenerator  = None,
 ) -> None:
     history.append(conversation)
     conversation.show(placeholder)
@@ -140,15 +140,14 @@ def main(
                 token = response.token
                 if response.token.special:
                     print("\n==Output:==\n", output_text)
-                    match token.text.strip():
-                        case '<|user|>':
-                            append_conversation(Conversation(
-                                Role.ASSISTANT,
-                                postprocess_text(output_text),
-                            ), history, markdown_placeholder)
-                            return
+                    if token.text.strip() == '<|user|>':
+                        append_conversation(Conversation(
+                            Role.ASSISTANT,
+                            postprocess_text(output_text),
+                        ), history, markdown_placeholder)
+                        return
                         # Initiate tool call
-                        case '<|assistant|>':
+                    elif token.text.strip() == '<|assistant|>':
                             append_conversation(Conversation(
                                 Role.ASSISTANT,
                                 postprocess_text(output_text),
@@ -157,7 +156,7 @@ def main(
                             message_placeholder = placeholder.chat_message(name="tool", avatar="assistant")
                             markdown_placeholder = message_placeholder.empty()
                             continue
-                        case '<|observation|>':
+                    elif  token.text.strip() == '<|observation|>':
                             tool, *call_args_text = output_text.strip().split('\n')
                             call_args_text = '\n'.join(call_args_text)
 
@@ -195,7 +194,7 @@ def main(
                                 markdown_placeholder = message_placeholder.empty()
                                 st.session_state.calling_tool = False
                                 break
-                        case _:
+                    else:
                             st.error(f'Unexpected special token: {token.text.strip()}')
                             return
                 output_text += response.token.text

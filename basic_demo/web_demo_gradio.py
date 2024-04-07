@@ -38,7 +38,7 @@ from transformers import (
 ModelType = Union[PreTrainedModel, PeftModelForCausalLM]
 TokenizerType = Union[PreTrainedTokenizer, PreTrainedTokenizerFast]
 
-MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
+MODEL_PATH = os.environ.get('MODEL_PATH', 'F:\\learn\\AI\\carr001\\learn_ai\\third_party\\ChatGLM3\\THUDM\\chatglm3-6b')
 TOKENIZER_PATH = os.environ.get("TOKENIZER_PATH", MODEL_PATH)
 
 
@@ -65,7 +65,7 @@ def load_model_and_tokenizer(
     )
     return model, tokenizer
 
-
+print(MODEL_PATH)
 model, tokenizer = load_model_and_tokenizer(MODEL_PATH, trust_remote_code=True)
 
 
