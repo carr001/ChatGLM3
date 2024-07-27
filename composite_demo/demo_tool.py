@@ -28,6 +28,7 @@ EXAMPLE_TOOL = {
 client = get_client()
 
 
+
 def tool_call(*args, **kwargs) -> dict:
     print("=== Tool call===")
     print(args)
@@ -197,11 +198,11 @@ def main(
                     else:
                             st.error(f'Unexpected special token: {token.text.strip()}')
                             return
-                output_text += response.token.text
-                markdown_placeholder.markdown(postprocess_text(output_text + '▌'))
-            else:
-                append_conversation(Conversation(
-                    Role.ASSISTANT,
-                    postprocess_text(output_text),
-                ), history, markdown_placeholder)
-                return
+                    output_text += response.token.text
+                    markdown_placeholder.markdown(postprocess_text(output_text + '▌'))
+                else:
+                    append_conversation(Conversation(
+                        Role.ASSISTANT,
+                        postprocess_text(output_text),
+                    ), history, markdown_placeholder)
+                    return
